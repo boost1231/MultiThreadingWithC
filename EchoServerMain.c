@@ -18,8 +18,16 @@ int main(int argc, const char **argv)
     int clientlen; // later on this will get the size of the client's socket address.
 
     struct sockaddr_in clientaddr;
-        /* This represents a socket address. A socket address is an IP and port number.
-            unsigned short sin_family; // Usually AF_INET
+        /*
+         * the '_in' is for internet. All the properties start with sin. I think this can
+         * be interpretted as socket internet. Remember the socket interface is designed
+         * work with any underlying protocols, not just tcp and ip. Thus the methods
+         * of the sockets interface do not accespt a sockadr_in, but rather a generic socket
+         * address structure called 'sockaddr'. See pg. 902 of my CSAPP book for more details.
+         * This represents a socket address. A socket address is an IP and port number. I copied these
+         * from the csapp book. The sockadr_in struct in the C headers use typedefs for each
+         * of the properties.
+            unsigned short sin_family; // Usually AF_INET/PF_INET. Indicates IPV4.
             unsigned short sin_port; // port number in network byte order
             struct in_addr sin_addr; // IP Address
                 // unsigned int s_addr; // an IP address in network byte order
@@ -91,20 +99,20 @@ int open_listenfd_from_book(int port)
 
     struct sockaddr_in serveraddr;
 
-    listenfd = socket(AF_INET, SOCK_STREAM, 0);
+    listenfd = socket(PF_INET, SOCK_STREAM, 6);
         // Creates a socket descriptor (used just like any other I/O descriptor).
         // socket creates an active socket, but it is converted later to a listening socekt as this is a server.
 
     if (listenfd < 0) return -1;
 
-    if (setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, (const void *)&optval, sizeof(int)) < 0)
+    if (setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, (const void *)&optval, sizeof(socklen_t)) < 0)
         return -1;
         // setSockOpt configures the server so that it can be terminated and restarted immediately.
         // By default a server will deny connection requests from clients for approximately 30 seconds.
 
     bzero((char *) &serveraddr, sizeof(serveraddr));
 
-    serveraddr.sin_family = AF_INET;
+    serveraddr.sin_family = PF_INET;
     serveraddr.sin_addr.s_addr = htonl(INADDR_ANY); // This says requests to any IP of the server will be accepted
                                                     // Remember a server can have multiple network interfaces
                                                     // and each network interface has it's own IP.
