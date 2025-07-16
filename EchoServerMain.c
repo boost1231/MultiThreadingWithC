@@ -1,12 +1,6 @@
-//
-//  main.c
-//  EchoServer
-//
-//  Created by Michael Delfanti on 9/7/15.
-//  Copyright (c) 2015 Michael Delfanti. All rights reserved.
-//
-
 #include "echo.h"
+#include <sys/un.h>
+#include <netinet/in.h>
 
 int open_listenfd_from_book(int port);
 
@@ -14,27 +8,17 @@ int main(int argc, const char **argv)
 {
     int listnenfd; // socket descriptor that the server will listen to requests on.
     int connfd;
-    int port; // argv[1] will be converted to integer and assigned to shis.
-    int clientlen; // later on this will get the size of the client's socket address.
+    int port; // argv[1] will be converted to integer and assigned to this.
+    socklen_t clientlen; // later on this will get the size of the client's socket address.
 
     struct sockaddr_in clientaddr;
         /*
          * the '_in' is for internet. All the properties start with sin. I think this can
-         * be interpretted as socket internet. Remember the socket interface is designed
+         * be interpretted as socket internet. Remember the socket interface is designed to
          * work with any underlying protocols, not just tcp and ip. Thus the methods
          * of the sockets interface do not accespt a sockadr_in, but rather a generic socket
          * address structure called 'sockaddr'. See pg. 902 of my CSAPP book for more details.
-         * This represents a socket address. A socket address is an IP and port number. I copied these
-         * from the csapp book. The sockadr_in struct in the C headers use typedefs for each
-         * of the properties.
-            unsigned short sin_family; // Usually AF_INET/PF_INET. Indicates IPV4.
-            unsigned short sin_port; // port number in network byte order
-            struct in_addr sin_addr; // IP Address
-                // unsigned int s_addr; // an IP address in network byte order
-            unsigned char sin_zero[8]; // Pad to sizeof(struct sockaddr).
-                                        This gets passed to the socket address api functions
-                                        and cast to a sockaddr struct. I think this adds this dummy
-                                        variable to match the padding of the sockaddr struct.
+         * See man 4 inet for the fields in sockaddr_in.
         */
 
     struct hostent *hp;
@@ -94,12 +78,14 @@ int main(int argc, const char **argv)
 // This functin is from my book.
 int open_listenfd_from_book(int port)
 {
+    struct sockaddr_un unixaddr;
+    struct sockaddr_in6 in6addr;
     int listenfd;
     int optval=1;
 
     struct sockaddr_in serveraddr;
 
-    listenfd = socket(PF_INET, SOCK_STREAM, 6);
+    listenfd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
         // Creates a socket descriptor (used just like any other I/O descriptor).
         // socket creates an active socket, but it is converted later to a listening socekt as this is a server.
 
@@ -123,7 +109,7 @@ int open_listenfd_from_book(int port)
         return -1;
         /*
             bind tells the kernal to associate the socket address, serveraddr, with
-            the socket descriptor, listenfd. SA is a dype def for the struct sockaddr.
+            the socket descriptor, listenfd. SA is a type def for the struct sockaddr.
             This was a way to make the function signature not protocol specific. Remember
             these functions are part of the sockets interface which is not protocol
             specific. This program happens to be using the TCP/IP protocol.

@@ -13,6 +13,9 @@ echoserver : echo.o csapp.o EchoServerMain.c
 csapp.o : csapp.h csapp.c
 	clang -o bin/csapp.o -c csapp.c
 
+runner : bin thread_pool_runner.c thread_pool.c action_queue.c
+	clang -o bin/runner thread_pool_runner.c thread_pool.c action_queue.c
+
 bin :
 	mkdir -p bin
 

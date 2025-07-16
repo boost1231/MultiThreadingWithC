@@ -1,0 +1,38 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "-o",
+      "bin/runner",
+      "thread_pool_runner.c"
+    ],
+    "directory": "/Users/michaeldelfanti/Repo/CProgramming/MultiThreadEchoClientServer",
+    "file": "/Users/michaeldelfanti/Repo/CProgramming/MultiThreadEchoClientServer/thread_pool_runner.c",
+    "output": "/Users/michaeldelfanti/Repo/CProgramming/MultiThreadEchoClientServer/bin/runner"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "-o",
+      "bin/runner",
+      "thread_pool.c"
+    ],
+    "directory": "/Users/michaeldelfanti/Repo/CProgramming/MultiThreadEchoClientServer",
+    "file": "/Users/michaeldelfanti/Repo/CProgramming/MultiThreadEchoClientServer/thread_pool.c",
+    "output": "/Users/michaeldelfanti/Repo/CProgramming/MultiThreadEchoClientServer/bin/runner"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-c",
+      "-o",
+      "bin/runner",
+      "action_queue.c"
+    ],
+    "directory": "/Users/michaeldelfanti/Repo/CProgramming/MultiThreadEchoClientServer",
+    "file": "/Users/michaeldelfanti/Repo/CProgramming/MultiThreadEchoClientServer/action_queue.c",
+    "output": "/Users/michaeldelfanti/Repo/CProgramming/MultiThreadEchoClientServer/bin/runner"
+  }
+]
