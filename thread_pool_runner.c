@@ -1,12 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include "thread_pool.h"
 
 void get_test_action(void *letter_input)
 {
     char *letter = (char *)letter_input;
-    printf("The letter passed to the action is %c\n", *letter);
+    printf("Going To Sleep: %c\n", *letter);
+    sleep(3);
+    printf("Woke Up: %c\n", *letter);
 }
 
 int main(int argc, char **argv)
@@ -26,9 +29,9 @@ int main(int argc, char **argv)
 
     while ((x = getchar()) != 'q') {
 
-      if (x == '\n') {
-        continue;
-      }
+        if (x == '\n') {
+          continue;
+        }
 
         char *y = malloc(sizeof(char));
         *y = x;
@@ -37,10 +40,11 @@ int main(int argc, char **argv)
         input.action = get_test_action;
         input.input = y;
 
-        printf("The value at y is %c\n", *y);
         thread_pool_enqueue(thread_pool, input);
     }
 
-    printf("The Program is Over!!!!");
+    thread_pool_shutdown(thread_pool);
+
+    printf("The Program is Over!!!!\n");
 }
 

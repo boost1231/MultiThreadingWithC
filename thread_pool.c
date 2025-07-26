@@ -23,12 +23,18 @@ static void *thread_action(void *arg)
 
     // We need a way to send a signal to cause the loop to exit.
     while (1) {
-        action_input handler = action_queue_dequeue(input->action_queue);
+        action_item_t handler = action_queue_dequeue(input->action_queue);
+
+        if (handler.queue_closed) {
+            break;
+        }
 
         handler.action(handler.input);
 
         free(handler.input);
     }
+
+    printf("Exiting thread %d.\n", input->my_id);
 
     return NULL;
 }
@@ -46,6 +52,7 @@ size_t thread_pool_thread_pool_t_size(int thread_pool_size)
 int thread_pool_create(thread_pool_t *thread_pool, int thread_pool_size, int queue_size)
 {
     thread_pool->action_queue = action_queue_init(queue_size);
+    thread_pool->thread_count = thread_pool_size;
 
     for (int i = 0; i < thread_pool_size; i++)
     {
@@ -56,8 +63,6 @@ int thread_pool_create(thread_pool_t *thread_pool, int thread_pool_size, int que
         input->action_queue = thread_pool->action_queue;
 
         pthread_create(&thread_pool->threads[i], NULL, thread_action, input);
-
-        pthread_detach(thread_pool->threads[i]);
     }
 
     return 0;
@@ -65,8 +70,18 @@ int thread_pool_create(thread_pool_t *thread_pool, int thread_pool_size, int que
 
 void thread_pool_shutdown(thread_pool_t *thread_pool)
 {
-    // Some how I need to signal to all the threads to release from the queue and exit.
-    // Do I have to JOIN on them?
+    // When 'action_queue_drain returns, I know there
+    // is nothing on the queue and it's safe to destroy it.
+    action_queue_drain(thread_pool->action_queue);
+
+    printf("Waiting for thread pool threads to exit.\n");
+
+    for (int i = 0; i < thread_pool->thread_count; i++) {
+        // May want to handle error conditions
+        pthread_join(thread_pool->threads[i], NULL);
+        printf("Joined to thread %d.\n", i);
+    }
+
     action_queue_destroy(thread_pool->action_queue);
 }
 
