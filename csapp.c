@@ -740,7 +740,7 @@ int open_clientfd(char *hostname, int port)
     /* Fill in the server's IP address and port */
     if ((hp = gethostbyname(hostname)) == NULL)
         return -2; /* Check h_errno for cause of error */
-    bzero((char *) &serveraddr, sizeof(serveraddr));
+    memset((char *) &serveraddr, 0, sizeof(serveraddr));
     serveraddr.sin_family = AF_INET;
     bcopy((char *)hp->h_addr_list[0],
           (char *)&serveraddr.sin_addr.s_addr, hp->h_length);
@@ -774,7 +774,7 @@ int open_listenfd(int port)
 
     /* Listenfd will be an endpoint for all requests to port
      on any IP address for this host */
-    bzero((char *) &serveraddr, sizeof(serveraddr));
+    memset((char *) &serveraddr, 0, sizeof(serveraddr));
     serveraddr.sin_family = AF_INET;
     serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
     serveraddr.sin_port = htons((unsigned short)port);

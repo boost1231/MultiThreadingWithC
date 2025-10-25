@@ -96,7 +96,7 @@ int open_listenfd_from_book(int port)
         // setSockOpt configures the server so that it can be terminated and restarted immediately.
         // By default a server will deny connection requests from clients for approximately 30 seconds.
 
-    bzero((char *) &serveraddr, sizeof(serveraddr));
+    memset((char *) &serveraddr, 0, sizeof(serveraddr));
 
     serveraddr.sin_family = PF_INET;
     serveraddr.sin_addr.s_addr = htonl(INADDR_ANY); // This says requests to any IP of the server will be accepted
